@@ -603,74 +603,10 @@ class: left, top
 # References
 
 ```{r refs_1, echo = FALSE, results='asis'}
-PrintBibliography(my_bib, start = 1, end = 3)
-```
-
----
-class: left, top
-
-# References
-
-```{r refs_2, echo = FALSE, results='asis'}
-PrintBibliography(my_bib, start = 4)
+PrintBibliography(my_bib)
 ```
 
 ---
 class: middle, center, inverse
 
 # Questions?
-
----
-class: middle, center, inverse
-
-# Appendix
-
----
-class: left, top
-
-# Finite Sample Results
-
-Under the quantities and assumptions defined in the previous slides, we make
-the additional assumptions that (1) for each $P \in \mathcal{M}$ and $X \sim P$,
-$\text{max}_{j = 1, \ldots, p} \lvert X^{(j)}\rvert < \sqrt{M_1} < \infty$ a.s.,
-and that (2) for all
-$\psi \in \boldsymbol{\Psi}$,
-$\lvert \psi^{(jl)} \rvert < M_2 < \infty$ for $j, l = 1, \ldots, p$ for some
-constants $M_1$ and $M_2$. Letting
-$\overline{M}(p) \equiv (M_1 + M_2)^2p^2$ and defining
-$c(\delta, \overline{M}(p)) \equiv 2(1+\delta)^2\overline{M}(p)(1/3 + 1/\delta)$,
-then for any $\delta > 0$:
-$$
-\begin{equation}
-0 \leq \mathbb{E}_{P_0}[\tilde{\theta}_{p_n, n}(\hat{k}_{p_n, n}) - \theta_0]
-\leq (1 + 2\delta)
-\mathbb{E}_{P_0}[\tilde{\theta}_{p_n, n}(\tilde{k}_{p_n,n}) - \theta_0] +
-2c(\delta, \overline{M}(p))\frac{1 + \log K_n}{np_n}.
-\end{equation}
-$$
----
-class: left, top
-
-# Asymptotic Results
-
-These finite sample results have the following asymptotic implications: If
-$c(\delta, \overline{M}(p))(1 + \log K_n)/(np_n\mathbb{E}_{P_0}[\tilde{\theta}_{p_n, n}(\tilde{k}_{p_n, n}) - \theta_0]) \rightarrow 0$ and $p/n \rightarrow m < \infty$
-as $n, p \rightarrow \infty$, then
-
-$$\frac{\mathbb{E}_{P_0}[\tilde{\theta}_{p_n, n}(\hat{k}_{p_n, n}) - \theta_0]}
-{\mathbb{E}_{P_0}[\tilde{\theta}_{p_n, n}(\tilde{k}_{p_n, n}) - \theta_0]}
-\rightarrow 1.$$
-
-Additionally, if $c(\delta, \overline{M}(p))(1 + \log K_n)/(np_n[\tilde{\theta}_{p_n, n}(\tilde{k}_{p_n, n}) - \theta_0) \overset{P}{\rightarrow} 0$,
-$H(P_0)\log K_n / p_n \rightarrow 0$, and
-$H(P_0)\log K_n / (p_n(\tilde{\theta}_{p_n, n}(\tilde{k}_{p_n, n}) - \theta_0)) \overset{P}{\rightarrow} 0$, and
-
-$$\frac{\tilde{\theta}_{p_n, n}(\tilde{k}_{p_n, n}) - \theta_0}
-{\tilde{\theta}_{n}(\tilde{k}_{n}) - \theta_0}
-\overset{P}{\rightarrow} 1$$
-
-as $p_n \rightarrow 0$ and $n, p \rightarrow \infty$, then
-
-$$\frac{\tilde{\theta}_{p_n, n}(\hat{k}_{p_n, n}) - \theta_0}
-{\tilde{\theta}_{n}(\tilde{k}_{n}) - \theta_0}
-\overset{P}{\rightarrow} 1.$$
