@@ -1,0 +1,11 @@
+.large { font-size: 130% }
+.small { font-size: 70% }
+.center2 {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  height: auto;
+}

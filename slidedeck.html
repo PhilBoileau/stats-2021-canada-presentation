@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Cross-Validated Covariance Matrix Estimator Selection in High Dimensions</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Philippe Boileau" />
+    <meta name="date" content="2021-07-17" />
+    <script src="libs/header-attrs-2.8/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="font-size.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Cross-Validated Covariance Matrix Estimator Selection in High Dimensions
+## Statistics 2021 Canada
+### Philippe Boileau
+### Graduate Group in Biostatistics and Center for Computational Biology <br> University of California, Berkeley <br>
+### 07/17/2021
+
+---
+
+
+&lt;style&gt;
+
+.remark-slide-content &gt; h1 {   font-size: 35px;   margin-top: -88px; }
+
+
+.center2 {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+&lt;/style&gt;
+
+
+
+# Why Estimate the Covariance Matrix?
+
+This parameter plays central roles in many exploratory and inferential
+procedures: 
+  
++ Exploration of dependence structure between features
++ Dimensionality reduction
++ Low rank approximations
++ Feature clustering
++ Confidence regions
++ Latent factor estimation
++ Tests for (multivariate) shifts in variability
+
+--
+
+However, the covariance matrix is rarely known *a priori*. Its estimates
+must be used instead.
+
+---
+class: left, top
+
+# Estimating Covariance Matrices in High Dimensions
+
+Let `\(\mathbf{X}_{n \times p} = \{X_1, \ldots, X_n: X_i \in \mathbb{R}^p\}\)` be a
+dataset of `\(n\)` i.i.d. random vectors. Let `\(X_i \sim P_0 \in \mathcal{M}\)`, where
+`\(P_0\)` denotes the true data-generating distribution, and `\(\mathcal{M}\)` is a
+nonparametric statistical model. Our goal the estimation of
+`\(\psi_0 \equiv \text{Var}[X_i]\)`.
+
+--
+
+When `\(n &gt;&gt; p\)`, the sample covariance matrix is the covariance matrix
+estimator of choice. Not so when `\(n \approx p\)`, or `\(n &lt; p\)`.
+
+???
+
+Why is the sample covariance matrix favoured? Ease of computation,
+(assuming that it's correctly scaled) is the MLE for multivariate Gaussian data,
+and is asymptotically consistent under the sufficient conditon is a bounded
+fourth moment (not too many outliers). Worth noting, however, that Stein had
+studied this in the 70s and 80s, showing that, like the multivariate mean
+parameter for p &gt; 3, it was possible to improve upon this estimator by
+regularizing the eigenvalues of the sample covariance matrix.
+
+However, we start encountering problems in high dimensions:
+- highly variable, even though it's unbiased
+- poor condition number, or singular, leading to poor results when it needs to be inverted
+- eigenvectors are typically inconsistent to true covariance matrix eigenvectors
+- eigenvalues are very biased (see example)
+
+--
+
+.center[
+![:scale 200%](figures/biased-eigenvalues.png)
+
+*The sample covariance applied to 50 realizations of `\(X \sim \mathcal{N}(0, \Sigma_{100 \times 100})\)`.*
+]
+
+???
+
+Note that the first eigenvalue is removed from the rightmost plot.
+
+---
+class: left, top
+
+# Alternative Estimators
+
+Thankfully, researchers have developed estimation strategies to address the
+sample covariance matrix's shortcomings.
+
+--
+
+.pull-left[
+**Approximately Sparse Covariance Matrix**
+
+![](figures/sparsity-cov-mat.png)
+]
+
+???
+
+- Proposed by Bickel and Levina in a 2008 paper. Expanded on by Rothman in 2009
+  with more general regularization function.
+- *Assumes "approximate sparsity", which is to say that a non-negligeable*
+  *portion of entries are small or zero. Consistency is achieved in high*
+  *dimensions so long as p does not grow much faster than n and that the DGP is*
+  *Gaussian (or subgaussian).*
+
+--
+
+.pull-right[
+**Tapered Covariance Matrix**
+
+![](figures/tapering-cov-mat.png)
+]
+
+???
+
+- Another proposition of Bickel and Levina from 2008. In fact, believe that the
+  two papers came out in the same issue of Annals of Statistics. Expanded upon
+  by Cai et al. in the following years.
+- *Assumes a fairly rigid structure: distant features (temporal or spatial) are*
+  *assumed to be independent. Under similar conditions to the sparsity-assuming*
+  *estimators, consistency is achievable if p is not much larger than n*
+  *asymptotically. Not all that surprising, not many parameters.*
+
+---
+class: left, top
+
+# Alternative Estimators (Continued)
+
+.pull-left[
+**Latent Factor Covariance Matrix**
+
+![](figures/latent-factor.png)
+]
+
+???
+
+- First proposed by Fan and others in 2013, these estimators assume that the
+  leading factors of the sample covariance matrix reflect the actual covariance
+  matrix, and that the rest constitute noise.
+- Can be thought of as the low-rank approximation of the sample covariance
+  matrix, in which the latter eigevectors are regularized
+  (usually by summing their outerproducts and then thresholding before summing
+  with leading eigenvectors).
+
+--
+
+.pull-right[
+**Shrunken Covariance Matrix**
+
+![](figures/shrinkage-cov-mat.png)
+]
+
+???
+
+- Inspired by Stein / Empirical-Bayes. Estimators are typically convex
+  combinations of the sample covariance matrix and a target matrix. Potential
+  targets include the identity, and the dense covariance matrix. Most popular
+  target is the identity, as it shrinks the eigenvectors towards the grand mean,
+  thereby guaranteeing positive definiteness of the estimates.
+- Recent work proposed non-linear shrinkage estimators wherein eigenvalues of
+  the sample covariance matrix are shrunk towards the modes of their empirical
+  distribution. 
+
+---
+class: left, top
+
+# Which Estimator Should We Use?
+
+Stringent assumptions about the true covariance matrix are typically impossible
+to verify:
+
++ How sparse is the true covariance matrix?
+
+--
+
++ Are "distant" features truly independent?
+
+--
+
++ How many latent factors are present, if any?
+
+--
+
++ Which target matrix is most appropriate?
+
+--
+
+.center[
+![](figures/headscratch.png)
+]
+
+???
+
+- No surprise that most people stick to the sample covariance matrix anyways!
+- These structural considerations are but one of the required assumptions about
+  the data generating distribution when choosing an estimator! We need a
+  general,objective, data-driven approach to covariance matrix estimator
+  selection.
+
+---
+class: left, top
+
+# Loss-Based Estimator Selection Framework
+
+The Loss-Based Estimation (LBE) framework proposed by
+:
+
+1. Define the statistical model and estimand
+
+???
+Identify the details of the problem and set a goal.
+--
+
+2. Identify candidate estimators
+
+???
+What tools can you use to accomplish you task?
+--
+
+3. Choose an appropriate loss function
+
+???
+Need a metric by which to evaluate the performance of these tools. Want a
+measurement that relates the estimates to the target parameter for the observed
+data.
+--
+
+4. Estimate the candidate estimators' risks using cross-validation (CV)
+
+???
+We'd like the to compute the loss function's associated risk to get an aggregate
+measure of performance -- i.e. compare the estimates to the true parameter
+value. Of course, this isn't possible, so we instead estimate the risk using CV.
+Recall that CV consists of intereatively paritioning the data into training and
+validation sets, where the estimators are fit on the training data, and then
+aggregate performance is computed over over the validation set.
+--
+
+5. Select the CV risk minimizer for the estimation procedure
+
+???
+Simply choose the estimator to use for the estimation task as the one that
+minimizes the CV risk.
+
+Give example of estimating the mean DNAm beta at a specific CpG site in a
+population.
+
+--
+
+Under somewhat nonrestrictive assumptions, the CV selection performs just as
+well as the selection one would make if the data generating distribution were
+known
+.
+
+???
+
+There are some general conditions, such as having a "well-behaved" loss, such
+that the true parameter minimizes the risk under `\(P_0\)`. Generally, however, the
+conditions vary from estimation problem to estimation problem. We'll discuss the
+conditions in more detail for the covariance matrix estimation problem in a bit.
+
+---
+class: left, top
+
+# Applying Lost-Based Estimation
+
+Only a few obstacles stand in the way of applying the LBE framework to this
+high-dimensional covariance matrix estimation problem:
+
+--
+
+1. Derive an appropriate loss function
+
+???
+
+- The most popular loss function used in the literature is probably the
+  Frobenius loss of the difference between the sample covariance matrix and the
+  estimate.
+- Asymptotic behaviour
+
+
+--
+
+2. Extended the theoretical results to the high-dimensional setting:
+Both `\(n, p \rightarrow \infty\)`, and `\(p/n \rightarrow c &gt; 0\)` asymptotically.
+
+???
+
+Need to make some minor tweaks to make sure that the theoretical results still
+hold for this setting. Essentially, allowing for finite-sample corrected
+results. In fact, that's the motivation high-dimensional (AKA Kolmogorov)
+asymptotics: make asymptotic arguments in finite samples. Otherwise, the sample
+covariance matrix would maintain its optimality.
+
+Let's discuss this loss function first.
+
+---
+class: left, top
+
+# The Observation-Level Frobenius Loss Function
+
+**We need a "well-behaved" error metric in high-dimensions.**
+
+???
+
+We need a loss function that is well-behaved in high-dimensions. What do I mean
+by this? That it quantifies error reasonably well in HD. For example, we might
+be tempted to use a generalization of the squared error loss that we all know
+and love. However, this might diverge as `\(p\)` increases. Instead, we might
+consider computing the "mean squared error loss" by summing and dividing by
+`\(p^2\)`. However, this might cause some poor estimators to be viewed as consistent
+in HD, when in fact they are known to be quite poor.
+
+--
+
+Define the covariance matrix for any `\(P \in \mathcal{M}\)` as
+`\(\psi \equiv \Psi(P)\)`. Then the parameter space is defined as
+`\(\boldsymbol{\Psi} \equiv \{\psi = \Psi(P): P \in \mathcal{M}\}\)`. The
+observation-level Frobenius loss function is then defined as
+
+$$
+`\begin{split}
+  L(X; \psi, H(P)) &amp; \equiv \left\lVert XX^\top - \psi \right\rVert^2_{F, H(P)} \\
+  &amp; = H(P) \sum_{j=1}^p \sum_{l=1}^p \left(X^{(j)}X^{(l)} - \psi^{(jl)}\right)^2
+\end{split}`
+$$
+
+for any `\(\psi \in \boldsymbol{\Psi}\)`, `\(X \sim P \in \mathcal{M}\)`.
+`\(H(P) \equiv 1 / \sum_j \sum_l \lvert \psi^{(jl)} \rvert\)` is a
+nuisance parameter (not really) acting as a scaling factor.
+
+???
+
+We therefore define a loss function that always scales by the appropriate
+amount, and is therefore a more reasonable definition of a generalized squared
+error loss.
+
+Don't take issue with the nuisance parameter just yet -- we'll handle it later.
+
+--
+
+Note that the empirical distribution `\(P_n \in \mathcal{M}\)` since `\(\mathcal{M}\)`
+is nonparametric. Assuming that there are `\(K_n\)` candidate estimators, they are
+denoted as `\(\hat{\psi}_k \equiv \hat{\Psi}_k(P_n)\)` for `\(k = 1, \ldots, K_n\)`.
+Further, `\(\hat{\psi}_k \in \boldsymbol{\Psi}\)`.
+
+???
+
+And just to be clear, the empirical distribution is a member of our
+nonparametric statisical model, and so the candidate estimators produce
+estimates that live within the parameter space of possible covariance matrices.
+
+---
+class: left, top
+
+# Estimator Selection
+
+**Choose the estimator that minimizes the conditional risk**
+**associated with the previously introduced loss under `\(P_0\)`**:
+
+$$
+`\begin{equation}
+\tilde{\theta}_n(k) \equiv \mathbb{E}_{P_0}[L(X; \hat{\psi}_k) \mid P_n].
+\end{equation}`
+$$
+--
+
+However, this is generally not possible; `\(P_0\)` is unknown. Instead, we use the
+CV conditional risk estimator as a substitute:
+
+$$
+`\begin{equation}
+\hat{\theta}_{p_n, n}(k) \equiv
+  \mathbb{E}_{B_n}\left[\frac{1}{np_n} \sum_{i=1}^n \mathbb{I}(B_n(i) = 1)
+  L(X_i; \hat{\Psi}_k(P_{n , B_n}^0)) \mid P_n
+  \right].
+\end{equation}`
+$$
+
+Here, `\(B_n\)` is a binary random vector of length `\(n\)` that assigns observations of
+`\(P_n\)` to the cross-validated training set `\(P_{n,B_n}^0\)` and validation set
+`\(P_{n, B_n}^1\)`. The proportion of observations in the `\(P_{n, B_n}^1\)` is dictated
+by `\(p_n\)`.
+
+---
+class: left, top
+
+# Estimator Selection (Continued)
+
+**Ideally, the CV selection is identical to the selection one would make if `\(P_0\)` were known.**
+
+--
+
+Define the conditional CV risk as an intermediate quantity:
+
+$$
+`\begin{equation}
+\tilde{\theta}_{p_n, n}(k) \equiv \mathbb{E}_{B_n}\left[
+\mathbb{E}_{P_0}\left[L(X; \hat{\Psi}_k(P_{n, B_n}^0)) \:\big\lvert\: P_{n, B_n}^0\right]
+\:\bigg\lvert\: P_n \right]
+\end{equation}`
+$$
+
+--
+
+Our hope is that the selection based on the CV conditional risk estimator,
+denoted `\(\hat{k}_{p_n, n}\)`, is "equivalent" to the selection based on the
+conditional CV risk's, denoted `\(\hat{k}_{p_n, n}\)`:
+
+$$
+`\begin{equation}
+\frac{\tilde{\theta}_{p_n,n}(\hat{k}_{p_n, n}) - \theta_0}
+{\tilde{\theta}_{p_n, n}(\tilde{k}_{p_n, n}) - \theta_0}
+\overset{P}{\rightarrow} 1, \text{ as } n, p \rightarrow \infty.
+\end{equation}`
+$$
+
+where `\(\theta_0\)` is the minimum risk under `\(P_0\)`.
+
+???
+
+The numerator and denominators are the risk differences -- simply the distance
+of the conditional risk for a given estimator to the minimum possible risk given
+when you plug the true parameter value into the risk under `\(P_0\)`.
+
+--
+
+We can aim for a even more practical result: relating `\(\hat{k}_{p_n, n}\)` to the
+selection that would be made over `\(P_n\)` if `\(P_0\)` were known, denoted
+`\(\tilde{k}_n\)`:
+
+$$
+`\begin{equation}
+\frac{\tilde{\theta}_n(\hat{k}_{p_n, n}) - \theta_0}
+{\tilde{\theta}_n(\tilde{k}_n) - \theta_0} \overset{P}{\rightarrow} 1,
+\text{ as } n, p \rightarrow \infty.
+\end{equation}`
+$$
+
+???
+
+Simply put, for a large enough dataset, does our selection have the same
+performance as the estimator that we would use if we knew the data generating
+distribution
+
+---
+class: left, top
+
+# Sumary of Results
+
+The expected risk difference of our procedure is bounded for fixed `\(n\)` and `\(p\)`
+by the expected risk difference of the oracle and an error term.
+
+--
+
+1. The entries of all `\(\psi \in \boldsymbol{\Psi}\)` are bounded.
+
+--
+
+2. For each `\(P \in \mathcal{M}\)` and `\(X \sim P\)`, the elements of `\(X\)` are bounded
+  almost surely.
+
+--
+
+Then, asymptotically in `\(n\)` and `\(p\)`, the expected risk differences of the oracle
+and the cross-validated selection converge so long as the oracle's risk
+difference increases at a rate faster than `\(p\)`.
+
+--
+
+.center[
+
+![](figures/increasing-p-intuition.png)
+
+]
+
+???
+
+As `\(p\)` grows, the salient structural patterns become more obvious. Put another
+way, the correct bias-variance trade-off becomes more obvious.
+
+I have another slide with explicit high-dimensional asymptotic results, if
+interested.
+
+---
+class: left, top
+
+# Simulation Study
+
+.pull-left[
+
+![:scale 100%](figures/mean-cv-risk-diff-ratio.png)
+
+]
+
+???
+
+As with all asymptotic results, important to verify that they actually occur for
+reasonable `\(n\)` and `\(p\)`. Indeed, that's what we see for a wide variety of
+covariance matrix structures. 
+- Explain rows
+- Explain cols
+- All simulated from Multivariate Normal with mean zero. Each point is the mean
+  of 200 simulated datasets.
+- Optimal selection is virtually achieved for all covariance matrices, with the
+  exception of first -- probably due to numerical instability of the selected
+  estimator.
+
+--
+
+.pull-right[
+
+- Notice that the scaling factor `\(H(P)\)` cancels out.
+- Optimal average selection is achieved when ratio is equal to `\(1\)`.
+- For large enough `\(n\)` and `\(p\)`, optimal selection (on average) is driven by
+  `\(p\)`.
+- Similar results for full dataset risk different ratios.
+
+]
+
+---
+class: left, top
+
+# Simulation Study (Continued)
+
+.center[
+
+![:scale 70%](figures/mean-frobenius-norm-comparison.png)
+
+]
+
+???
+
+Another way of looking at our method is to compare our CV procedure to all the
+candidate estimators that make it up. As you can see, the cvCovEst method
+performs as well as teh best estimator across the board.
+
+---
+class: left, top
+
+# Dimensionality Reduction Application
+
+.center2[
+![:scale 150%](figures/allen-umap.png)
+
+*Comparing reduced-dimension representation of 286 cells from 's scRNA-seq data. The 1,000 most variable genes are considered.*
+]
+
+???
+
+Recall that the sample covariance matrix's eigenvectors and eigenvalues are
+biased in high-dimensions. Therefore, high-dimensional PCA can leads to noisy
+and inaccurate low-dimensional embeddings. We posited that we could use our
+method to get improved estimates of a dataset's eigenvectors, and use them to
+perform an improved PCA.
+
+This dimensionality reduction step is popular in scRNA-seq data, where the goal
+is often to identify novel cell types based on the transcriptome data of
+individual cells. The reduced dimensional representation data is thought to
+dampen uninteresting biological variability, and allows for easy clustering of
+cell types. PCA is usually an intermediary dim reduc, followed by a non-linear
+method like t-SNE or UMAP.
+
+Here, we compare the difference in embeddings using the traditional PCA-based
+approach, and the cvCovEst based approached.
+
+---
+class: middle, center, inverse
+
+# Conclusion
+
+---
+class: left, top
+
+# References
+
+NULL
+
+---
+class: left, top
+
+# References
+
+NULL
+
+---
+class: middle, center, inverse
+
+# Questions?
+
+---
+class: middle, center, inverse
+
+# Appendix
+
+---
+class: left, top
+
+# Finite Sample Results
+
+Under the quantities and assumptions defined in the previous slides, we make
+the additional assumptions that (1) for each `\(P \in \mathcal{M}\)` and `\(X \sim P\)`,
+`\(\text{max}_{j = 1, \ldots, p} \lvert X^{(j)}\rvert &lt; \sqrt{M_1} &lt; \infty\)` a.s.,
+and that (2) for all
+`\(\psi \in \boldsymbol{\Psi}\)`,
+`\(\lvert \psi^{(jl)} \rvert &lt; M_2 &lt; \infty\)` for `\(j, l = 1, \ldots, p\)` for some
+constants `\(M_1\)` and `\(M_2\)`. Letting
+`\(\overline{M}(p) \equiv (M_1 + M_2)^2p^2\)` and defining
+`\(c(\delta, \overline{M}(p)) \equiv 2(1+\delta)^2\overline{M}(p)(1/3 + 1/\delta)\)`,
+then for any `\(\delta &gt; 0\)`:
+$$
+`\begin{equation}
+0 \leq \mathbb{E}_{P_0}[\tilde{\theta}_{p_n, n}(\hat{k}_{p_n, n}) - \theta_0]
+\leq (1 + 2\delta)
+\mathbb{E}_{P_0}[\tilde{\theta}_{p_n, n}(\tilde{k}_{p_n,n}) - \theta_0] +
+2c(\delta, \overline{M}(p))\frac{1 + \log K_n}{np_n}.
+\end{equation}`
+$$
+---
+class: left, top
+
+# Asymptotic Results
+
+These finite sample results have the following asymptotic implications: If
+`\(c(\delta, \overline{M}(p))(1 + \log K_n)/(np_n\mathbb{E}_{P_0}[\tilde{\theta}_{p_n, n}(\tilde{k}_{p_n, n}) - \theta_0]) \rightarrow 0\)` and `\(p/n \rightarrow m &lt; \infty\)`
+as `\(n, p \rightarrow \infty\)`, then
+
+`$$\frac{\mathbb{E}_{P_0}[\tilde{\theta}_{p_n, n}(\hat{k}_{p_n, n}) - \theta_0]}
+{\mathbb{E}_{P_0}[\tilde{\theta}_{p_n, n}(\tilde{k}_{p_n, n}) - \theta_0]}
+\rightarrow 1.$$`
+
+Additionally, if `\(c(\delta, \overline{M}(p))(1 + \log K_n)/(np_n[\tilde{\theta}_{p_n, n}(\tilde{k}_{p_n, n}) - \theta_0) \overset{P}{\rightarrow} 0\)`,
+`\(H(P_0)\log K_n / p_n \rightarrow 0\)`, and
+`\(H(P_0)\log K_n / (p_n(\tilde{\theta}_{p_n, n}(\tilde{k}_{p_n, n}) - \theta_0)) \overset{P}{\rightarrow} 0\)`, and
+
+`$$\frac{\tilde{\theta}_{p_n, n}(\tilde{k}_{p_n, n}) - \theta_0}
+{\tilde{\theta}_{n}(\tilde{k}_{n}) - \theta_0}
+\overset{P}{\rightarrow} 1$$`
+
+as `\(p_n \rightarrow 0\)` and `\(n, p \rightarrow \infty\)`, then
+
+`$$\frac{\tilde{\theta}_{p_n, n}(\hat{k}_{p_n, n}) - \theta_0}
+{\tilde{\theta}_{n}(\tilde{k}_{n}) - \theta_0}
+\overset{P}{\rightarrow} 1.$$`
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="addons/macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
