@@ -537,11 +537,11 @@ covariance matrix structures.
 
 .pull-right[
 
-- Notice that the scaling factor `\(H(P)\)` cancels out.
 - Optimal average selection is achieved when ratio is equal to `\(1\)`.
 - For large enough `\(n\)` and `\(p\)`, optimal selection (on average) is driven by
   `\(p\)`.
-- Similar results for full dataset risk different ratios.
+- Similar results for full dataset risk different ratios (i.e. convergence in
+  probability).
 
 ]
 
@@ -590,6 +590,21 @@ method like t-SNE or UMAP.
 
 Here, we compare the difference in embeddings using the traditional PCA-based
 approach, and the cvCovEst based approached.
+
+---
+class: left, top
+
+# Implementation
+
+This method is implemented in the peer-reviewed `cvCovEst` `R`
+[11] package:
+
++ A stable version is made availble on `CRAN` at https://CRAN.R-project.org/package=cvCovEst
++ A development version is
+available on GitHub at https://github.com/PhilBoileau/cvCovEst
++ Twelve classes of estimators are included, along with three different loss
+  functions.
++ A suite of plotting and diagnostic methods are also provided.
 
 ---
 class: middle, center, inverse
@@ -664,11 +679,20 @@ Working Paper 130. Berkeley: University of California, Berkeley, 2003.
 URL:
 [https://biostats.bepress.com/ucbbiostat/paper130/](https://biostats.bepress.com/ucbbiostat/paper130/).
 
+---
+class: left, top
+
+# References
+
 [10] B. Tasic et al. "Adult mouse cortical cell taxonomy revealed by
 single cell transcriptomics". In: _Nature Neuroscience_ 19.2 (2016),
 pp. 335-346. DOI: [10.1038/nn.4216](https://doi.org/10.1038%2Fnn.4216).
 URL:
 [https://doi.org/10.1038/nn.4216](https://doi.org/10.1038/nn.4216).
+
+[11] R Core Team. _R: A Language and Environment for Statistical
+Computing_. R Foundation for Statistical Computing. Vienna, Austria,
+2021. URL: [https://www.R-project.org/](https://www.R-project.org/).
 
 ---
 class: middle, center, inverse

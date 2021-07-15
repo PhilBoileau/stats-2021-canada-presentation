@@ -537,11 +537,11 @@ covariance matrix structures.
 
 .pull-right[
 
-- Notice that the scaling factor $H(P)$ cancels out.
 - Optimal average selection is achieved when ratio is equal to $1$.
 - For large enough $n$ and $p$, optimal selection (on average) is driven by
   $p$.
-- Similar results for full dataset risk different ratios.
+- Similar results for full dataset risk different ratios (i.e. convergence in
+  probability).
 
 ]
 
@@ -592,6 +592,22 @@ Here, we compare the difference in embeddings using the traditional PCA-based
 approach, and the cvCovEst based approached.
 
 ---
+class: left, top
+
+# Implementation
+
+This method is implemented in the peer-reviewed `cvCovEst` `R`
+`r Citep(my_bib, "rstats")` package:
+
++ A stable version is made availble on `CRAN` at https://CRAN.R-project.org/package=cvCovEst
++ A development version is
+available on GitHub at https://github.com/PhilBoileau/cvCovEst
++ Twelve classes of estimators are implemented, along with three different loss
+  functions.
++ Included is a suite of plotting tools and summary methods.
++ Suggest the addition of new estimators by opening an issue on GitHub
+
+---
 class: middle, center, inverse
 
 # Conclusion
@@ -611,7 +627,16 @@ class: left, top
 # References
 
 ```{r refs_2, echo = FALSE, results='asis'}
-PrintBibliography(my_bib, start = 6, end = length(my_bib))
+PrintBibliography(my_bib, start = 6, end = 9)
+```
+
+---
+class: left, top
+
+# References
+
+```{r refs_3, echo = FALSE, results='asis'}
+PrintBibliography(my_bib, start = 10, end = length(my_bib))
 ```
 
 ---
