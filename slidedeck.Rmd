@@ -34,8 +34,8 @@ output:
 library(RefManageR)
 BibOptions(
   check.entries = FALSE,
-  bib.style = "authoryear",
-  cite.style = "natbib",
+  bib.style = "numeric",
+  cite.style = "numeric",
   style = "markdown",
   hyperlink = FALSE,
   max.names = 1,
@@ -117,7 +117,7 @@ sample covariance matrix's shortcomings.
 --
 
 .pull-left[
-**Approximately Sparse Covariance Matrix**
+**Sparse Covariance Matrix** `r Citep(my_bib, c("bickel2008b", "rothman2009"))`
 
 ![](figures/sparsity-cov-mat.png)
 ]
@@ -134,7 +134,7 @@ sample covariance matrix's shortcomings.
 --
 
 .pull-right[
-**Tapered Covariance Matrix**
+**Tapered Covariance Matrix** `r Citep(my_bib, c("bickel2008a", "cai2010"))`
 
 ![](figures/tapering-cov-mat.png)
 ]
@@ -155,7 +155,7 @@ class: left, top
 # Alternative Estimators (Continued)
 
 .pull-left[
-**Latent Factor Covariance Matrix**
+**Latent Factor Covariance Matrix** `r Citep(my_bib, c("fan2013", "fan2018"))`
 
 ![](figures/latent-factor.png)
 ]
@@ -173,7 +173,7 @@ class: left, top
 --
 
 .pull-right[
-**Shrunken Covariance Matrix**
+**Empirical Bayes Approach** `r Citep(my_bib, c("ledoit2004", "ledoit2020"))`
 
 ![](figures/shrinkage-cov-mat.png)
 ]
@@ -383,8 +383,7 @@ class: left, top
 
 # Estimator Selection
 
-**Choose the estimator that minimizes the conditional risk**
-**associated with the previously introduced loss under $P_0$**:
+**Choose the estimator that minimizes the conditional risk under $P_0$**:
 
 $$
 \begin{equation}
@@ -415,7 +414,7 @@ class: left, top
 
 # Estimator Selection (Continued)
 
-**Ideally, the CV selection is identical to the selection one would make if $P_0$ were known.**
+**The CV selection is ideally equivalent to the selection made when $P_0$ is known**
 
 --
 
@@ -490,9 +489,9 @@ by the expected risk difference of the oracle and an error term.
 
 --
 
-Then, asymptotically in $n$ and $p$, the expected risk differences of the oracle
-and the cross-validated selection converge so long as the oracle's risk
-difference increases at a rate faster than $p$.
+Then, asymptotically in $n$, $p$ and $p/n \rightarrow c > 0$, the oracle's and
+the cross-validated selection's performances converge so long as the oracle's
+risk difference increases at a rate faster than $p$.
 
 --
 
@@ -603,7 +602,16 @@ class: left, top
 # References
 
 ```{r refs_1, echo = FALSE, results='asis'}
-PrintBibliography(my_bib)
+PrintBibliography(my_bib, start = 1, end = 5)
+```
+
+---
+class: left, top
+
+# References
+
+```{r refs_2, echo = FALSE, results='asis'}
+PrintBibliography(my_bib, start = 6, end = length(my_bib))
 ```
 
 ---

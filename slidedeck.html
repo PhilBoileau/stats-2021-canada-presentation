@@ -115,7 +115,7 @@ sample covariance matrix's shortcomings.
 --
 
 .pull-left[
-**Approximately Sparse Covariance Matrix**
+**Sparse Covariance Matrix** [1; 2]
 
 ![](figures/sparsity-cov-mat.png)
 ]
@@ -132,7 +132,7 @@ sample covariance matrix's shortcomings.
 --
 
 .pull-right[
-**Tapered Covariance Matrix**
+**Tapered Covariance Matrix** [3; 4]
 
 ![](figures/tapering-cov-mat.png)
 ]
@@ -153,7 +153,7 @@ class: left, top
 # Alternative Estimators (Continued)
 
 .pull-left[
-**Latent Factor Covariance Matrix**
+**Latent Factor Covariance Matrix** [5; 6]
 
 ![](figures/latent-factor.png)
 ]
@@ -171,7 +171,7 @@ class: left, top
 --
 
 .pull-right[
-**Shrunken Covariance Matrix**
+**Empirical Bayes Approach** [7; 8]
 
 ![](figures/shrinkage-cov-mat.png)
 ]
@@ -231,7 +231,7 @@ class: left, top
 The Loss-Based Estimation (LBE) framework proposed by
 van
 der
-Laan et al. (2003):
+Laan et al. [9]:
 
 1. Define the statistical model and estimand
 
@@ -278,9 +278,7 @@ population.
 Under somewhat nonrestrictive assumptions, the CV selection performs just as
 well as the selection one would make if the data generating distribution were
 known
-(van
-der
-Laan et al., 2003).
+[9].
 
 ???
 
@@ -385,8 +383,7 @@ class: left, top
 
 # Estimator Selection
 
-**Choose the estimator that minimizes the conditional risk**
-**associated with the previously introduced loss under `\(P_0\)`**:
+**Choose the estimator that minimizes the conditional risk under `\(P_0\)`**:
 
 $$
 `\begin{equation}
@@ -417,7 +414,7 @@ class: left, top
 
 # Estimator Selection (Continued)
 
-**Ideally, the CV selection is identical to the selection one would make if `\(P_0\)` were known.**
+**The CV selection is ideally equivalent to the selection made when `\(P_0\)` is known**
 
 --
 
@@ -492,9 +489,9 @@ by the expected risk difference of the oracle and an error term.
 
 --
 
-Then, asymptotically in `\(n\)` and `\(p\)`, the expected risk differences of the oracle
-and the cross-validated selection converge so long as the oracle's risk
-difference increases at a rate faster than `\(p\)`.
+Then, asymptotically in `\(n\)`, `\(p\)` and `\(p/n \rightarrow c &gt; 0\)`, the oracle's and
+the cross-validated selection's performances converge so long as the oracle's
+risk difference increases at a rate faster than `\(p\)`.
 
 --
 
@@ -573,7 +570,7 @@ class: left, top
 .center2[
 ![:scale 150%](figures/allen-umap.png)
 
-*Comparing reduced-dimension representation of 286 cells from Tasic et al. (2016)'s scRNA-seq data. The 1,000 most variable genes are considered.*
+*Comparing reduced-dimension representation of 286 cells from Tasic et al. [10]'s scRNA-seq data. The 1,000 most variable genes are considered.*
 ]
 
 ???
@@ -604,16 +601,72 @@ class: left, top
 
 # References
 
-der Laan, M. J. van et al. (2003). _Unified Cross-Validation
-Methodology For Selection Among Estimators and a General
-Cross-Validated Adaptive Epsilon-Net Estimator: Finite Sample Oracle
-Inequalities and Examples_. Working Paper 130. Berkeley: University of
-California, Berkeley. URL:
+[1] P. J. Bickel et al. "Covariance regularization by thresholding".
+In: _Annals of Statistics_ 36.6 (Dec. 2008), pp. 2577-2604. DOI:
+[10.1214/08-AOS600](https://doi.org/10.1214%2F08-AOS600). URL:
+[https://doi.org/10.1214/08-AOS600](https://doi.org/10.1214/08-AOS600).
+
+[2] A. J. Rothman et al. "Generalized Thresholding of Large Covariance
+Matrices". In: _Journal of the American Statistical Association_
+104.485 (2009), pp. 177-186. DOI:
+[10.1198/jasa.2009.0101](https://doi.org/10.1198%2Fjasa.2009.0101).
+eprint: https://doi.org/10.1198/jasa.2009.0101. URL:
+[https://doi.org/10.1198/jasa.2009.0101](https://doi.org/10.1198/jasa.2009.0101).
+
+[3] P. J. Bickel et al. "Regularized estimation of large covariance
+matrices". In: _Annals of Statistics_ 36.1 (Feb. 2008), pp. 199-227.
+DOI:
+[10.1214/009053607000000758](https://doi.org/10.1214%2F009053607000000758).
+URL:
+[https://doi.org/10.1214/009053607000000758](https://doi.org/10.1214/009053607000000758).
+
+[4] T. Cai et al. "Optimal rates of convergence for covariance matrix
+estimation". In: _Annals of Statistics_ 38.4 (Aug. 2010), pp.
+2118-2144. DOI:
+[10.1214/09-AOS752](https://doi.org/10.1214%2F09-AOS752). URL:
+[https://doi.org/10.1214/09-AOS752](https://doi.org/10.1214/09-AOS752).
+
+[5] J. Fan et al. "Large covariance estimation by thresholding
+principal orthogonal complements". In: _Journal of the Royal
+Statistical Society: Series B (Statistical Methodology)_ 75.4 (2013),
+pp. 603-680. ISSN: 13697412, 14679868. DOI:
+[10.2139/ssrn.1977673](https://doi.org/10.2139%2Fssrn.1977673). URL:
+[http://www.jstor.org/stable/24772450](http://www.jstor.org/stable/24772450).
+
+---
+class: left, top
+
+# References
+
+[6] J. Fan et al. "Large covariance estimation through elliptical
+factor models". In: _Annals of Statistics_ 46.4 (Aug. 2018), pp.
+1383-1414. DOI:
+[10.1214/17-AOS1588](https://doi.org/10.1214%2F17-AOS1588). URL:
+[https://doi.org/10.1214/17-AOS1588](https://doi.org/10.1214/17-AOS1588).
+
+[7] O. Ledoit et al. "A well-conditioned estimator for
+large-dimensional covariance matrices". In: _Journal of Multivariate
+Analysis_ 88.2 (2004), pp. 365-411. ISSN: 0047-259X. DOI:
+[10.1016/S0047-259X(03)00096-4](https://doi.org/10.1016%2FS0047-259X%2803%2900096-4).
+URL:
+[http://www.sciencedirect.com/science/article/pii/S0047259X03000964](http://www.sciencedirect.com/science/article/pii/S0047259X03000964).
+
+[8] O. Ledoit et al. "Analytical nonlinear shrinkage of
+large-dimensional covariance matrices". In: _Annals of Statistics_ 48.5
+(2020), pp. 3043 - 3065. DOI:
+[10.1214/19-AOS1921](https://doi.org/10.1214%2F19-AOS1921). URL:
+[https://doi.org/10.1214/19-AOS1921](https://doi.org/10.1214/19-AOS1921).
+
+[9] M. J. van der Laan et al. _Unified Cross-Validation Methodology For
+Selection Among Estimators and a General Cross-Validated Adaptive
+Epsilon-Net Estimator: Finite Sample Oracle Inequalities and Examples_.
+Working Paper 130. Berkeley: University of California, Berkeley, 2003.
+URL:
 [https://biostats.bepress.com/ucbbiostat/paper130/](https://biostats.bepress.com/ucbbiostat/paper130/).
 
-Tasic, B. et al. (2016). "Adult mouse cortical cell taxonomy revealed
-by single cell transcriptomics". In: _Nature Neuroscience_ 19.2, pp.
-335-346. DOI: [10.1038/nn.4216](https://doi.org/10.1038%2Fnn.4216).
+[10] B. Tasic et al. "Adult mouse cortical cell taxonomy revealed by
+single cell transcriptomics". In: _Nature Neuroscience_ 19.2 (2016),
+pp. 335-346. DOI: [10.1038/nn.4216](https://doi.org/10.1038%2Fnn.4216).
 URL:
 [https://doi.org/10.1038/nn.4216](https://doi.org/10.1038/nn.4216).
 
