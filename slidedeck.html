@@ -4,7 +4,6 @@
     <title>Cross-Validated Covariance Matrix Estimator Selection in High Dimensions</title>
     <meta charset="utf-8" />
     <meta name="author" content="Philippe Boileau" />
-    <meta name="date" content="2021-07-17" />
     <script src="libs/header-attrs-2.8/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
@@ -18,8 +17,7 @@ class: center, middle, inverse, title-slide
 # Cross-Validated Covariance Matrix Estimator Selection in High Dimensions
 ## Statistics 2021 Canada
 ### Philippe Boileau
-### Graduate Group in Biostatistics and Center for Computational Biology <br> University of California, Berkeley <br>
-### 07/17/2021
+### Graduate Group in Biostatistics and Center for Computational Biology <br> University of California, Berkeley <br> <em>Joint work with Nima Hejazi, Mark van der Laan, and Sandrine Dudoit</em> <br>
 
 ---
 
@@ -327,20 +325,6 @@ class: left, top
 
 # The Observation-Level Frobenius Loss Function
 
-**We need a "well-behaved" error metric in high-dimensions.**
-
-???
-
-We need a loss function that is well-behaved in high-dimensions. What do I mean
-by this? That it quantifies error reasonably well in HD. For example, we might
-be tempted to use a generalization of the squared error loss that we all know
-and love. However, this might diverge as `\(p\)` increases. Instead, we might
-consider computing the "mean squared error loss" by summing and dividing by
-`\(p^2\)`. However, this might cause some poor estimators to be viewed as consistent
-in HD, when in fact they are known to be quite poor.
-
---
-
 Define the covariance matrix for any `\(P \in \mathcal{M}\)` as
 `\(\psi \equiv \Psi(P)\)`. Then the parameter space is defined as
 `\(\boldsymbol{\Psi} \equiv \{\psi = \Psi(P): P \in \mathcal{M}\}\)`. The
@@ -348,35 +332,21 @@ observation-level Frobenius loss function is then defined as
 
 $$
 `\begin{split}
-  L(X; \psi, H(P)) &amp; \equiv \left\lVert XX^\top - \psi \right\rVert^2_{F, H(P)} \\
-  &amp; = H(P) \sum_{j=1}^p \sum_{l=1}^p \left(X^{(j)}X^{(l)} - \psi^{(jl)}\right)^2
+  L(X; \psi) &amp; \equiv \left\lVert XX^\top - \psi \right\rVert^2_{F} \\
+  &amp; = \sum_{j=1}^p \sum_{l=1}^p \left(X^{(j)}X^{(l)} - \psi^{(jl)}
+    \right)^2
 \end{split}`
 $$
 
 for any `\(\psi \in \boldsymbol{\Psi}\)`, `\(X \sim P \in \mathcal{M}\)`.
-`\(H(P) \equiv 1 / \sum_j \sum_l \lvert \psi^{(jl)} \rvert\)` is a
-nuisance parameter (not really) acting as a scaling factor.
 
 ???
 
-We therefore define a loss function that always scales by the appropriate
-amount, and is therefore a more reasonable definition of a generalized squared
-error loss.
-
-Don't take issue with the nuisance parameter just yet -- we'll handle it later.
-
---
-
-Note that the empirical distribution `\(P_n \in \mathcal{M}\)` since `\(\mathcal{M}\)`
-is nonparametric. Assuming that there are `\(K_n\)` candidate estimators, they are
-denoted as `\(\hat{\psi}_k \equiv \hat{\Psi}_k(P_n)\)` for `\(k = 1, \ldots, K_n\)`.
-Further, `\(\hat{\psi}_k \in \boldsymbol{\Psi}\)`.
-
-???
-
-And just to be clear, the empirical distribution is a member of our
-nonparametric statisical model, and so the candidate estimators produce
-estimates that live within the parameter space of possible covariance matrices.
+Mention that risk minimizer associated with this loss is identical to that of
+the traditional Frobenius norm-based loss that employs the sample covariance
+matrix instead of the outer product of a single random observation. As such, the
+associated risk also informs on the accuracy of the average eigenvalues for a
+given estimator.
 
 ---
 class: left, top
@@ -385,15 +355,21 @@ class: left, top
 
 **Choose the estimator that minimizes the conditional risk under `\(P_0\)`**:
 
+--
+
+Let `\(P_n \in \mathcal{M}\)` denote the empirical distribution, and let
+`\(\hat{\Psi}_k(\cdot), k = 1, \ldots, K\)`, be estimators of `\(\psi_0\)`. Then the
+conditional risk is defined as
+
 $$
 `\begin{equation}
-\tilde{\theta}_n(k) \equiv \mathbb{E}_{P_0}[L(X; \hat{\psi}_k) \mid P_n].
+\tilde{\theta}_n(k) \equiv \mathbb{E}_{P_0}[L(X; \hat{\Psi}_k(P_n)) \mid P_n].
 \end{equation}`
 $$
 --
 
-However, this is generally not possible; `\(P_0\)` is unknown. Instead, we use the
-CV conditional risk estimator as a substitute:
+However, this is generally not possible to compute; `\(P_0\)` is unknown. Instead,
+we use the CV conditional risk estimator as a substitute:
 
 $$
 `\begin{equation}
@@ -405,9 +381,8 @@ $$
 $$
 
 Here, `\(B_n\)` is a binary random vector of length `\(n\)` that assigns observations of
-`\(P_n\)` to the cross-validated training set `\(P_{n,B_n}^0\)` and validation set
-`\(P_{n, B_n}^1\)`. The proportion of observations in the `\(P_{n, B_n}^1\)` is dictated
-by `\(p_n\)`.
+`\(P_n\)` to the cross-validated training set `\(P_{n,B_n}^0\)`. `\(p_n\)` dictates the
+proportion of observations in the validation set.
 
 ---
 class: left, top
@@ -431,8 +406,8 @@ $$
 --
 
 Our hope is that the selection based on the CV conditional risk estimator,
-denoted `\(\hat{k}_{p_n, n}\)`, is "equivalent" to the selection based on the
-conditional CV risk's, denoted `\(\hat{k}_{p_n, n}\)`:
+indexed by `\(\hat{k}_{p_n, n}\)`, is "equivalent" to the selection based on the
+conditional CV risk's, indexed by `\(\hat{k}_{p_n, n}\)`:
 
 $$
 `\begin{equation}
@@ -594,7 +569,7 @@ approach, and the cvCovEst based approached.
 ---
 class: left, top
 
-# Implementation
+# The cvCovEst Package
 
 This method is implemented in the peer-reviewed `cvCovEst` `R`
 [11] package:
@@ -602,9 +577,10 @@ This method is implemented in the peer-reviewed `cvCovEst` `R`
 + A stable version is made availble on `CRAN` at https://CRAN.R-project.org/package=cvCovEst
 + A development version is
 available on GitHub at https://github.com/PhilBoileau/cvCovEst
-+ Twelve classes of estimators are included, along with three different loss
++ Twelve classes of estimators are implemented, along with three different loss
   functions.
-+ A suite of plotting and diagnostic methods are also provided.
++ Included is a suite of plotting tools and summary methods.
++ Suggest additional estimators by opening an issue on GitHub
 
 ---
 class: middle, center, inverse
