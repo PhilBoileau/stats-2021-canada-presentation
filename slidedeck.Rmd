@@ -349,102 +349,14 @@ matrix instead of the outer product of a single random observation. As such, the
 associated risk also informs on the accuracy of the average eigenvalues for a
 given estimator.
 
----
-class: left, top
-
-# Estimator Selection
-
-**Choose the estimator that minimizes the conditional risk under $P_0$**:
-
 --
 
-Let $P_n \in \mathcal{M}$ denote the empirical distribution, and let
-$\hat{\Psi}_k(\cdot), k = 1, \ldots, K$, be estimators of $\psi_0$. Then the
-conditional risk is defined as
-
+The traditional Frobenius loss is defined as
 $$
-\begin{equation}
-\tilde{\theta}_n(k) \equiv \mathbb{E}_{P_0}[L(X; \hat{\Psi}_k(P_n)) \mid P_n].
-\end{equation}
+L_{trad}(S(\mathbf{X}); \psi) \equiv \lVert S_n(\mathbf{X}) - \psi \rVert_F^2,
 $$
---
-
-However, this is generally not possible to compute; $P_0$ is unknown. Instead,
-we use the CV conditional risk estimator as a substitute:
-
-$$
-\begin{equation}
-\hat{\theta}_{p_n, n}(k) \equiv
-  \mathbb{E}_{B_n}\left[\frac{1}{np_n} \sum_{i=1}^n \mathbb{I}(B_n(i) = 1)
-  L(X_i; \hat{\Psi}_k(P_{n , B_n}^0)) \mid P_n
-  \right].
-\end{equation}
-$$
-
-Here, $B_n$ is a binary random vector of length $n$ that assigns observations of
-$P_n$ to the cross-validated training set $P_{n,B_n}^0$. $p_n$ dictates the
-proportion of observations in the validation set.
-
----
-class: left, top
-
-# Estimator Selection (Continued)
-
-**The CV selection is ideally equivalent to the selection made when $P_0$ is known**
-
---
-
-Define the conditional CV risk as an intermediate quantity:
-
-$$
-\begin{equation}
-\tilde{\theta}_{p_n, n}(k) \equiv \mathbb{E}_{B_n}\left[
-\mathbb{E}_{P_0}\left[L(X; \hat{\Psi}_k(P_{n, B_n}^0)) \:\big\lvert\: P_{n, B_n}^0\right]
-\:\bigg\lvert\: P_n \right]
-\end{equation}
-$$
-
---
-
-Our hope is that the selection based on the CV conditional risk estimator,
-indexed by $\hat{k}_{p_n, n}$, is "equivalent" to the selection based on the
-conditional CV risk's, indexed by $\hat{k}_{p_n, n}$:
-
-$$
-\begin{equation}
-\frac{\tilde{\theta}_{p_n,n}(\hat{k}_{p_n, n}) - \theta_0}
-{\tilde{\theta}_{p_n, n}(\tilde{k}_{p_n, n}) - \theta_0}
-\overset{P}{\rightarrow} 1, \text{ as } n, p \rightarrow \infty.
-\end{equation}
-$$
-
-where $\theta_0$ is the minimum risk under $P_0$.
-
-???
-
-The numerator and denominators are the risk differences -- simply the distance
-of the conditional risk for a given estimator to the minimum possible risk given
-when you plug the true parameter value into the risk under $P_0$.
-
---
-
-We can aim for a even more practical result: relating $\hat{k}_{p_n, n}$ to the
-selection that would be made over $P_n$ if $P_0$ were known, denoted
-$\tilde{k}_n$:
-
-$$
-\begin{equation}
-\frac{\tilde{\theta}_n(\hat{k}_{p_n, n}) - \theta_0}
-{\tilde{\theta}_n(\tilde{k}_n) - \theta_0} \overset{P}{\rightarrow} 1,
-\text{ as } n, p \rightarrow \infty.
-\end{equation}
-$$
-
-???
-
-Simply put, for a large enough dataset, does our selection have the same
-performance as the estimator that we would use if we knew the data generating
-distribution
+where $\mathbf{X}$ is an $n \times p$ matrix of random vectors, and $S_n(\cdot)$
+is the sample covariance matrix.
 
 ---
 class: left, top
@@ -496,27 +408,16 @@ class: left, top
 
 ]
 
-???
-
-As with all asymptotic results, important to verify that they actually occur for
-reasonable $n$ and $p$. Indeed, that's what we see for a wide variety of
-covariance matrix structures. 
-- Explain rows
-- Explain cols
-- All simulated from Multivariate Normal with mean zero. Each point is the mean
-  of 200 simulated datasets.
-- Optimal selection is virtually achieved for all covariance matrices, with the
-  exception of first -- probably due to numerical instability of the selected
-  estimator.
-
 --
 
 .pull-right[
 
+- Each point is made up of 300 datasets.
+- 74 individuals estimators are included in the library.
 - Optimal average selection is achieved when ratio is equal to $1$.
 - For large enough $n$ and $p$, optimal selection (on average) is driven by
   $p$.
-- Similar results for full dataset risk different ratios (i.e. convergence in
+- Similar results for full dataset risk difference ratios (i.e. convergence in
   probability).
 
 ]
@@ -541,35 +442,6 @@ performs as well as teh best estimator across the board.
 ---
 class: left, top
 
-# Dimensionality Reduction Application
-
-.center2[
-![:scale 150%](figures/allen-umap.png)
-
-*Comparing reduced-dimension representation of 286 cells from `r gsub(", (?=et al\\.)", " ", Citet(my_bib, "tasic2016"), perl=TRUE)`'s scRNA-seq data. The 1,000 most variable genes are considered.*
-]
-
-???
-
-Recall that the sample covariance matrix's eigenvectors and eigenvalues are
-biased in high-dimensions. Therefore, high-dimensional PCA can leads to noisy
-and inaccurate low-dimensional embeddings. We posited that we could use our
-method to get improved estimates of a dataset's eigenvectors, and use them to
-perform an improved PCA.
-
-This dimensionality reduction step is popular in scRNA-seq data, where the goal
-is often to identify novel cell types based on the transcriptome data of
-individual cells. The reduced dimensional representation data is thought to
-dampen uninteresting biological variability, and allows for easy clustering of
-cell types. PCA is usually an intermediary dim reduc, followed by a non-linear
-method like t-SNE or UMAP.
-
-Here, we compare the difference in embeddings using the traditional PCA-based
-approach, and the cvCovEst based approached.
-
----
-class: left, top
-
 # The cvCovEst Package
 
 This method is implemented in the peer-reviewed `cvCovEst` `R`
@@ -580,8 +452,9 @@ This method is implemented in the peer-reviewed `cvCovEst` `R`
 available on GitHub at https://github.com/PhilBoileau/cvCovEst
 + Twelve classes of estimators are implemented, along with three different loss
   functions.
-+ Included is a suite of plotting tools and summary methods.
-+ Suggest additional estimators by opening an issue on GitHub
++ A suite of plotting tools and summary methods is included.
++ A tutorial is provided in the accompanying vignette. 
++ Open an issue on GitHub to suggest additional estimators.
 
 ---
 class: middle, center, inverse
@@ -612,10 +485,11 @@ class: left, top
 # References
 
 ```{r refs_3, echo = FALSE, results='asis'}
-PrintBibliography(my_bib, start = 10, end = length(my_bib))
+PrintBibliography(my_bib, start = 10, end = 10)
 ```
 
 ---
 class: middle, center, inverse
 
 # Questions?
+pboileau.ca
