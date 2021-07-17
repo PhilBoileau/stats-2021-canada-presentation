@@ -353,7 +353,7 @@ given estimator.
 
 The traditional Frobenius loss is defined as
 $$
-L_{trad}(S(\mathbf{X}); \psi) \equiv \lVert S_n(\mathbf{X}) - \psi \rVert_F^2,
+L_{trad}(S_n(\mathbf{X}); \psi) \equiv \lVert S_n(\mathbf{X}) - \psi \rVert_F^2,
 $$
 where $\mathbf{X}$ is an $n \times p$ matrix of random vectors, and $S_n(\cdot)$
 is the sample covariance matrix.
